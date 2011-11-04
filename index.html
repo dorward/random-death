@@ -74,14 +74,12 @@
         }
         
         function findCharacter() {
-            var potential_names = ta.value.match(/\b[A-Z][-a-z]+\b/g);
+            var potential_names = ta.value.match(/\b[A-Z][-a-z]+(?:\s[A-Z][-a-z]+)\b/g);
             if (!potential_names) { return null; };
             for (var i = potential_names.length - 1; i > -1; i--) {
                 var name = potential_names[i];
                 var test = name.toLowerCase();
-                console.log("Testing: " + test);
                 if (!(test in words)) {
-                    console.log("Using: " + name);
                     return name;
                 }
             }
