@@ -76,6 +76,11 @@
         }
         
         function findCharacter() {
+            /*
+                Mr. O'Reilly and Bob McDoogle are immortal
+                Trying to use regex to match names is a stupid plan.
+                I only do it in toys.
+            */
             var potential_names = ta.value.match(/\b[A-Z][-a-z]+(?:\s[A-Z][-a-z]+)\b/g);
             if (!potential_names) { return null; };
             for (var i = potential_names.length - 1; i > -1; i--) {
