@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta charset=utf-8>
+    <title>The novel writer with random death</title>
+    <style>
+        body {
+            max-width: 500px;
+            margin: auto;
+            font-family: sans-serif;
+        }
+        p, h1 {
+            text-align: justify;
+        }
+        textarea, p, h1 {
+            display: block;
+            width: 90%;
+            margin: 1em auto;
+            line-height: 1.2;
+        }
+        textarea {
+            height: 20em;
+            max-height: 100%;
+        }
+    </style>
+    <script>
+    
+        /*
+        Yes, this is a bit ick.
+        I hacked it together on a train with no
+        network connection for libraries or
+        documentation.
+        I really need to keep a decent library
+        on my HDD. I get it.
+        */    
+    
+        var ta, words;
+        
+        function loadWords(jsonp) {
+            words = jsonp;
+        }
+        
+        function bindEvents () {
+            ta = document.getElementsByTagName('textarea')[0]
+            ta.addEventListener('keyup', keyListener);
+        }
+        
+        onload = bindEvents;
+        
+        function keyListener (e) {
+            var key = e.keyCode;
+            if (key === 32 /* space */) {
+                var count = countWords();
+                if (count && !(count % 50)) {
+                    killCharacter();
+                }
+            }
+        }
+        
+        function countWords() {
+            var text = ta.value;
+            var words = text.split(/\s+/);
+            if (!words) { return 0 }
+            /* The space at the end will leave an empty string */
+            return words.length - 1; 
+        }
+        
+        function killCharacter() {
+            var character = findCharacter();
+            if (character) { 
+                ta.value += deathSelect(character);
+            }
+        }
+        
+        function findCharacter() {
+            var potential_names = ta.value.match(/\b[A-Z][-a-z]+\b/g);
+            if (!potential_names) { return null; };
+            for (var i = potential_names.length - 1; i > -1; i--) {
+                var name = potential_names[i];
+                var test = name.toLowerCase();
+                console.log("Testing: " + test);
+                if (!(test in words)) {
+                    console.log("Using: " + name);
+                    return name;
+                }
+            }
+            return null;
+        }
+
+        var deaths = [
+                    "… but at that moment a freak storm whipped up and a bolt of lightning fried %s where they stood!",
+                    "… there was a thump and everyone turned to see what caused it. %s had just dropped dead of a heart attack!",
+                    "… meanwhile the dead pirate Lord Melonball Scoop and Pippa Frying Pan passed through in the middle of their duel and %s was stabbed by a rogue rapier thrust!"
+                      ];
+        
+        function deathSelect(character) {
+            var death = deaths[Math.floor(Math.random() * deaths.length)];
+            death = death.replace("%s", character);
+            return death;
+        }
+        
+    </script>
+    <script src="words.js"></script>        
+</head>
+
+<body>
+<h1>The novel writer with random death</h1>
+
+<p>This is a toy inspired by a Twitter joke, and that should
+tell you all you need to know about the practical value of this.</p>
+
+<p>Start typing your novel into the box below and, if you have JavaScript
+enabled and I haven't screwed up somewhere, you will find your characters
+being automatically killed off every <strong>50 words</strong>.</p>
+
+<p>Since this is a toy, I do not promise logic, sanity or grammar.</p>
+
+<p>Tweet your own contributions to my list of random deaths to <a href="http://twitter.com/dorward">@dorward</a>.</p>
+
+
+<textarea></textarea>
+
+</body>
+</html>
