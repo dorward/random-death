@@ -44,6 +44,8 @@
         function bindEvents () {
             ta = document.getElementsByTagName('textarea')[0]
             ta.addEventListener('keyup', keyListener);
+            var x = document.getElementById('notworking');
+            x.parentNode.removeChild(x);
         }
         
         onload = bindEvents;
@@ -119,8 +121,23 @@ being automatically killed off every <strong>50 words</strong>.</p>
 
 <p>Tweet your own contributions to my list of random deaths to <a href="http://twitter.com/dorward">@dorward</a>.</p>
 
-
 <textarea></textarea>
+
+<h2>Known Issues</h2>
+
+<p>I wrote this on a train without a JS normalisation library and
+couldn't be bothered to look up the Microsoft way to attach events.
+The code just uses the standard code, so this will probably error in
+most versions of Internet Explorer. <span id="notworking">If you can see
+this, then the script probably isn't working for you</span></span></p>
+
+<p>You will find that characters sharing names with English words (Smith
+and John for example) will be immortal as names are compared against a
+dictionary ("John Smith" is not a dictionary word though, so he should be
+afraid, very afraid). In retrospect, I'd probably have been better off
+looking to see if a name was at the start of a sentence instead of being
+in the dictionary (but that would have got its own set of false positives
+and negatives)</p>
 
 </body>
 </html>
