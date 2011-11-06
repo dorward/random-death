@@ -53,8 +53,8 @@
                           ];
             
             // The program itself
-            
-            YUI().use('node', 'event', function (Y) {
+                        
+            YUI().use({ gallery: 'gallery-2010.08.11-20-39' }, 'node', 'event', 'gallery-event-pasted', function (Y) {
 
                 var ta;            
             
@@ -63,13 +63,14 @@
                 function bindEvents () {
                     ta = Y.one('textarea');
                     ta.on('key', newWord, "32");
+                    ta.on('pasted', killCharacter);
                 }
                 
                 function newWord() {
                     if (isDeathTime()) {
                         killCharacter();
                     }
-                }
+                }                
                 
                 function isDeathTime() {
                     var count = countWords();
@@ -148,10 +149,11 @@ some amusing output, then please blog it and tweet me the link.</p>
 
 <p><strong>The spacebar is magical</strong>, it is the act of pressing
 the spacebar after typing the 50th (100th, 150th, etc) word that sends
-the coffee fueled scribes hunting for names in your text. While this may
-change in the (near) future, you'll only get results when you type. Copy / paste
-will not trigger it and will probably leave you with something other that
-a multiple of 50 words.</p>
+the coffee fueled scribes hunting for names in your text.</p>
+
+<p><strong>Pasting is also magical</strong>. Without regard to the
+number of words in the text, if you paste something and the complete
+text includes at least one character, then one of them will die.</p>
 
 <textarea></textarea>
 
