@@ -27,90 +27,105 @@
             max-height: 100%;
         }
     </style>
+    <script src="http://yui.yahooapis.com/3.4.1/build/yui/yui-min.js"></script>
     <script>
+
+        // Load be ready to load the dictionary from JSON-P    
     
-        /*
-        Yes, this is a bit ick.
-        I hacked it together on a train with no
-        network connection for libraries or
-        documentation.
-        I really need to keep a decent library
-        on my HDD. I get it.
-        */    
-    
-        var ta, words;
+        var words;
         
         function loadWords(jsonp) {
             words = jsonp;
         }
         
-        function bindEvents () {
-            ta = document.getElementsByTagName('textarea')[0]
-            ta.addEventListener('keyup', keyListener);
-            var x = document.getElementById('notworking');
-            x.parentNode.removeChild(x);
-        }
+        // Closure to avoid globals
+        (function () {        
         
-        onload = bindEvents;
-        
-        function keyListener (e) {
-            var key = e.keyCode;
-            if (key === 32 /* space */) {
-                var count = countWords();
-                if (count && !(count % 50)) {
-                    killCharacter();
-                }
-            }
-        }
-        
-        function countWords() {
-            var text = ta.value;
-            var words = text.split(/\s+/);
-            if (!words) { return 0 }
-            /* The space at the end will leave an empty string */
-            return words.length - 1; 
-        }
-        
-        function killCharacter() {
-            var character = findCharacter();
-            if (character) { 
-                ta.value += deathSelect(character);
-            }
-        }
-        
-        function findCharacter() {
-            /*
-                Mr. O'Reilly and Bob McDoogle are immortal
-                Trying to use regex to match names is a stupid plan.
-                I only do it in toys.
-            */
-            var potential_names = ta.value.match(/\b[A-Z][-a-z]+(?:\s[A-Z][-a-z]+)\b/g);
-            if (!potential_names) { return null; };
-            for (var i = potential_names.length - 1; i > -1; i--) {
-                var name = potential_names[i];
-                var test = name.toLowerCase();
-                if (!(test in words)) {
-                    return name;
-                }
-            }
-            return null;
-        }
+            // data: Ways for the character to die
+            
+            var deaths = [
+                        "… but at that moment a freak storm whipped up and a bolt of lightning fried %s where they stood!",
+                        "… there was a thump and everyone turned to see what caused it. %s had just dropped dead of a heart attack!",
+                        "… meanwhile the dead pirate Lord Melonball Scoop and Pippa Frying Pan passed through in the middle of their duel and %s was stabbed by a rogue rapier thrust!",
+                        "… and at that moment, %s spontaneously combusted and left nothing but a pile of ash!",
+                        "… SPLAT! A rock had just fallen and %s was squished to death!",
+                        "… at that moment the planet was demolished for a new space highway and %s died (along with everyone sharing a ball of rock with them)!"
+                          ];
+            
+            // The program itself
+            
+            YUI().use('node', 'event', function (Y) {
 
-        var deaths = [
-                    "… but at that moment a freak storm whipped up and a bolt of lightning fried %s where they stood!",
-                    "… there was a thump and everyone turned to see what caused it. %s had just dropped dead of a heart attack!",
-                    "… meanwhile the dead pirate Lord Melonball Scoop and Pippa Frying Pan passed through in the middle of their duel and %s was stabbed by a rogue rapier thrust!",
-                    "… and at that moment, %s spontaneously combusted and left nothing but a pile of ash!",
-                    "… SPLAT! A rock had just fallen and %s was squished to death!",
-                    "… at that moment the planet was demolished for a new space highway and %s died (along with everyone sharing a ball of rock with them)!"
-                      ];
+                var ta;            
+            
+                Y.on('domready', bindEvents);
+            
+                function bindEvents () {
+                    ta = Y.one('textarea');
+                    ta.on('key', newWord, "32");
+                }
+                
+                function newWord() {
+                    if (isDeathTime()) {
+                        killCharacter();
+                    }
+                }
+                
+                function isDeathTime() {
+                    var count = countWords();
+                    return (count && !(count % 50));
+                }
+                
+                function getText() {
+                    return ta.get('value');
+                }
+                
+                
+                function countWords() {
+                    var words = getText().split(/\s+/);
+                    if (!words) { return 0; }
+                    /* The space at the end will leave an
+                       empty string in last array index
+                    */
+                    return words.length - 1; 
+                }
+                
+                function killCharacter() {
+                    var character = findCharacter();
+                    if (character) { 
+                        ta.set(
+                               'value',
+                               getText() + deathSelect(character)
+                               );
+                    }
+                }
+                
+                function findCharacter() {
+                    /*
+                        Mr. O'Reilly and Bob McDoogle are immortal
+                        Trying to use regex to match names is a stupid plan.
+                        I only do it in toys.
+                    */
+                    var potential_names = getText().match(/\b[A-Z][\-a-z]+(?:\s[A-Z][\-a-z]+)\b/g);
+                    if (!potential_names) { return null; }
+                    for (var i = potential_names.length - 1; i > -1; i--) {
+                        var name = potential_names[i];
+                        var test = name.toLowerCase();
+                        if (!(test in words)) {
+                            return name;
+                        }
+                    }
+                    return null;
+                }
         
-        function deathSelect(character) {
-            var death = deaths[Math.floor(Math.random() * deaths.length)];
-            death = death.replace("%s", character);
-            return death;
-        }
-        
+                function deathSelect(character) {
+                    var death = deaths[Math.floor(Math.random() * deaths.length)];
+                    death = death.replace("%s", character);
+                    return death;
+                }
+            
+            });
+        })();
     </script>
     <script src="words.js"></script>        
 </head>
@@ -141,12 +156,6 @@ a multiple of 50 words.</p>
 <textarea></textarea>
 
 <h2>Known Issues</h2>
-
-<p>I wrote this on a train without a JS normalisation library and
-couldn't be bothered to look up the Microsoft way to attach events.
-The code just uses the standard code, so this will probably error in
-most versions of Internet Explorer. <span id="notworking"><strong>If you can see
-this, then the script probably isn't working for you</strong></span></p>
 
 <p>You will find that characters sharing names with English words (Smith
 and John for example) will be immortal as names are compared against a
